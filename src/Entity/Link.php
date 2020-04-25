@@ -19,12 +19,12 @@ class Link
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=2048, unique=true)
+     * @ORM\Column(type="string", length=2048)
      */
     private $url;
 
     /**
-     * @ORM\Column(type="string", length=50, unique=true)
+     * @ORM\Column(type="string", length=50, unique=true, nullable=true)
      */
     private $short_url;
 

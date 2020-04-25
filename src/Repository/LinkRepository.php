@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Link;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @method Link|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,37 +15,29 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class LinkRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $serializer;
+
+    public function __construct(ManagerRegistry $registry, SerializerInterface $serializer)
     {
         parent::__construct($registry, Link::class);
+        $this->serializer = $serializer;
     }
 
-    // /**
-    //  * @return Link[] Returns an array of Link objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function fill(string $data): Link
     {
-        return $this->createQueryBuilder('l')
-            ->andWhere('l.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('l.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        return $this->serializer->deserialize($data, Link::class, 'json');
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Link
+    public function create(string $data): Link
     {
-        return $this->createQueryBuilder('l')
-            ->andWhere('l.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $link = $this->fill($data);
+        return $this->save($link);
     }
-    */
+
+    public function save(Link $link): Link
+    {
+        $this->_em->persist($link);
+        $this->_em->flush();
+        return $link;
+    }
 }

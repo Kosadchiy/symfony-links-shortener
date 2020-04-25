@@ -19,7 +19,7 @@
     },
     methods: {
       shorten: function () {
-        axios.post('/test', {
+        axios.post('/shorten', {
           url: this.url
         })
         .then(function (response) {
