@@ -1,11 +1,17 @@
 <template>
   <el-row :gutter="10" type="flex" class="row-bg" justify="center">
-    <el-col :span="18">
-      <el-input placeholder="Input your link" v-model="url" />
-    </el-col>
-    <el-col :span="2">
-      <el-button v-on:click="shorten" type="primary">Shorten</el-button>
-    </el-col>
+    <el-form :model="link" status-icon :rules="rules" ref="link">
+      <el-col :span="18">
+        <el-form-item :error="errors.url ? errors.url.join(' | ') : ''" prop="url">
+          <el-input placeholder="Input your link" v-model="link.url" />
+        </el-form-item>
+      </el-col>
+      <el-col :span="2">
+        <el-form-item>
+          <el-button @click="shorten" type="primary">Shorten</el-button>
+        </el-form-item>
+      </el-col>
+    </el-form>
   </el-row>
 </template>
 
@@ -14,20 +20,54 @@
   export default {
     data() {
       return {
-        url: ''
+        link: {
+          url: ''
+        },
+        rules: {
+          url: [
+            { required: true, message: 'Please input url', trigger: 'blur' },
+          ]
+        },
+        errors: {}
       };
     },
     methods: {
-      shorten: function () {
-        axios.post('/shorten', {
-          url: this.url
-        })
+      shorten: async function () {
+        this.$refs['link'].validate((valid) => {
+          if (!valid) {
+            return false;
+          }
+        });
+
+        axios.post('/shorten', this.$refs['link'].model)
         .then(function (response) {
-          console.log(response);
+          console.log(response.data);
         })
-        .catch(function (error) {
-          console.log(error);
+        .catch((error) => {
+          console.log(error.response.data);
+          
+          this.onError(error.response.data);
         });       
+      },
+      onError: function (data) {
+        this.$message({
+          showClose: true,
+          message: data.title,
+          type: 'error'
+        });
+        if (data.violations.length) {
+          this.fillErrors(data.violations);
+        }
+      },
+      fillErrors: function (errors) {
+        this.errors = {};
+        errors.forEach(error => {
+          if (this.errors[error.propertyPath]) {
+            this.errors[error.propertyPath].push(error.title);
+          } else {
+            this.errors[error.propertyPath] = [error.title];
+          }
+        });
       }
     }
   }
