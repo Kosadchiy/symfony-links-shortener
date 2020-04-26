@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\LinksRepository")
@@ -20,6 +21,8 @@ class Link
 
     /**
      * @ORM\Column(type="string", length=2048)
+     * @Assert\NotBlank
+     * @Assert\Url
      */
     private $url;
 
