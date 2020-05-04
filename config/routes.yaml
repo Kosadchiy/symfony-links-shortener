@@ -1,8 +1,0 @@
-index:
-    path:       /
-    controller: App\Controller\HomeController::index
-    methods:    GET
-shorten:
-    path:       /shorten
-    controller: App\Controller\LinkController::shorten
-    methods:    POST

@@ -4,12 +4,16 @@ namespace App\Controller;
 
 use App\Entity\Link;
 use App\Repository\LinkRepository;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * @Route("/api")
+ */
 class LinkController extends AbstractController
 {
     private $linkRepository;
@@ -19,6 +23,10 @@ class LinkController extends AbstractController
         $this->linkRepository = $linkRepository;
     }
 
+    /**
+     * @Route("/shorten", name="shorten", methods={"POST"})
+     * @return Response
+     */
     public function shorten(Request $request, SerializerInterface $serializer, ValidatorInterface $validator)
     {
         $content = $request->getContent();
