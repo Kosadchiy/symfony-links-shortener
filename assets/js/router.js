@@ -6,6 +6,7 @@ import Register from './views/Register';
 Vue.use(VueRouter);
 
 export default new VueRouter({
+  mode: "history",
   routes: [
     {
       path: '/',
@@ -16,6 +17,7 @@ export default new VueRouter({
       path: '/register',
       name: 'register',
       component: Register
-    }
+    },
+    { path: "*", redirect: "/" }
   ]
 });

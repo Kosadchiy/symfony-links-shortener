@@ -37,7 +37,8 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import { post } from '../utils/api';
+  import { successMessage } from '../utils/message';
   export default {
     data() {
       return {
@@ -56,24 +57,24 @@
       };
     },
     methods: {
-      shorten: function () {
-        this.$refs['link'].validate((valid) => {
+      shorten: async function () {
+        this.$refs['link'].validate( async (valid) => {
           if (!valid) {
             return false;
+          } else {
+            this.errors = {};
+            this.loading = true;
+            const response = await post('/api/shorten', this.$refs['link'].model);
+            this.loading = false;
+            
+            if (response.status === 200) {
+              this.disableShortenButton = true;
+              this.shortUrl = response.data.url;
+            } else if (response.data.violations && response.data.violations.length) {
+              this.fillErrors(response.data.violations);
+            }
           }
         });
-
-        this.loading = true;
-        axios.post('/shorten', this.$refs['link'].model)
-        .then((response) => {
-          this.loading = false;
-          this.disableShortenButton = true;
-          this.shortUrl = response.data.url;
-        })
-        .catch((error) => {
-          this.loading = false;
-          this.onError(error.response.data);
-        });       
       },
       urlChanged: function () {
         this.disableShortenButton = false;
@@ -85,29 +86,16 @@
         input.select();
         document.execCommand('copy');
         document.body.removeChild(input);
-        this.$message({
-          showClose: true,
-          message: 'Copied to clipboard!',
-          type: 'success'
-        });
-      },
-      onError: function (data) {
-        this.$message({
-          showClose: true,
-          message: data.title,
-          type: 'error'
-        });
-        if (data.violations.length) {
-          this.fillErrors(data.violations);
-        }
+        successMessage('Copied to clipboard!');
       },
       fillErrors: function (errors) {
         this.errors = {};
         errors.forEach(error => {
-          if (this.errors[error.propertyPath]) {
-            this.errors[error.propertyPath].push(error.title);
+          const propertyPath = error.propertyPath.replace(/[\[\]']+/g, '');
+          if (this.errors[propertyPath]) {
+            this.errors[propertyPath].push(error.title);
           } else {
-            this.errors[error.propertyPath] = [error.title];
+            this.errors[propertyPath] = [error.title];
           }
         });
       }
