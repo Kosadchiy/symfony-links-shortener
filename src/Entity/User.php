@@ -7,7 +7,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -19,6 +18,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  *     message="This email is already exists.",
  *     groups={"registration", "default"}
  * )
+ * @Assert\Callback({"App\Validator\ConfirmPasswordValidator", "validate"}, groups={"registration"})
  */
 class User implements UserInterface
 {
@@ -184,18 +184,5 @@ class User implements UserInterface
     {
         $this->password = null;
         $this->confirm = null;
-    }
-
-    /**
-     * @Assert\Callback(groups={"registration"})
-     */
-    public function validate(ExecutionContextInterface $context)
-    {
-        if ($context->getRoot()->password !== $context->getRoot()->confirm) {
-            $context->buildViolation('Confirmation must be equal to password.')
-                ->atPath('confirm')
-                ->addViolation()
-            ;
-        }
     }
 }
