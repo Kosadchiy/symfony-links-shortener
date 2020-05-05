@@ -1,5 +1,5 @@
 <style lang="scss" scoped>
-  #register__form {
+  #login__form {
     &__container {
       display: flex;
       align-items: center;
@@ -12,32 +12,25 @@
   }
 </style>
 <template>
-  <el-row id="register__form__container" type="flex" class="row-bg" justify="center">
+  <el-row id="login__form__container" type="flex" class="row-bg" justify="center">
     <el-col :span="6"  type="flex" class="row-bg" justify="center">
-      <el-form label-width="auto" :model="registerForm" status-icon :rules="rules" ref="registerForm">
+      <el-form label-width="auto" :model="loginForm" status-icon :rules="rules" ref="loginForm">
         <el-form-item 
           label="Email" 
           prop="email" 
           :error="errors.email ? errors.email.join(' | ') : ''"
         >
-          <el-input v-model="registerForm.email"></el-input>
+          <el-input v-model="loginForm.email"></el-input>
         </el-form-item>
         <el-form-item 
           label="Password" 
           prop="password" 
           :error="errors.password ? errors.password.join(' | ') : ''"
         >
-          <el-input type="password" v-model="registerForm.password" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item 
-          label="Confirm" 
-          prop="confirm"
-          :error="errors.confirm ? errors.confirm.join(' | ') : ''"
-        >
-          <el-input type="password" v-model="registerForm.confirm" autocomplete="off"></el-input>
+          <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('registerForm')">Register</el-button>
+          <el-button type="primary" @click="submitForm('loginForm')">Login</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -45,14 +38,13 @@
 </template>
 <script>
   import { post } from '../utils/api';
-  import { successMessage } from '../utils/message';
+  import Cookies from 'js-cookie';
   export default {
     data() {
       return {
-        registerForm: {
+        loginForm: {
           email: '',
-          password: '',
-          confirm: ''
+          password: ''
         },
         rules: {
           email: [
@@ -60,9 +52,6 @@
           ],
           password: [
             { required: true, message: 'Please input password.', trigger: 'blur' },
-          ],
-          confirm: [
-            { required: true, message: 'Please confirm password.', trigger: 'blur' },
           ]
         },
         errors: {}
@@ -75,10 +64,10 @@
             return false;
           } else {
             this.errors = {};
-            const response = await post('/api/register', this.$refs[formName].model);
+            const response = await post('/api/login', this.$refs[formName].model);
             if (response.status === 200) {
-              successMessage('Success!');
-              location.href = '/login';
+              Cookies.set('api_token', response.data.token);
+              location.href = '/';
             } else if (response.data.violations && response.data.violations.length) {
               this.fillErrors(response.data.violations);
             }
