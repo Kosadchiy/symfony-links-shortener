@@ -14,7 +14,11 @@ export const post = async (endpoint, params = {}, onError = defaultErrorMessage)
 export const defaultErrorMessage = ((error) => {
   console.log(error.response);
   
-  const message = getObjectValue(error, 'response.data.title', 'Something went wrong =(');
+  const message = getObjectValue(
+    error, 
+    'response.data.message', 
+    getObjectValue(error, 'response.data.title', 'Something went wrong =(')
+  );
   errorMessage(message);
   return getObjectValue(error, 'response', null);
 });
