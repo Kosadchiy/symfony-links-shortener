@@ -38,6 +38,7 @@
 </template>
 <script>
   import { post } from '../utils/api';
+  import { fillFormErrors } from '../utils/helpers';
   import Cookies from 'js-cookie';
   export default {
     data() {
@@ -69,21 +70,10 @@
               Cookies.set('api_token', response.data.token);
               location.href = '/';
             } else if (response.data.violations && response.data.violations.length) {
-              this.fillErrors(response.data.violations);
+              fillFormErrors.call(this, response.data.violations);
             }
           }
         });
-      },
-      fillErrors: function (errors) {
-        this.errors = {};
-        errors.forEach(error => {
-          const propertyPath = error.propertyPath.replace(/[\[\]']+/g, '');
-          if (this.errors[propertyPath]) {
-            this.errors[propertyPath].push(error.title);
-          } else {
-            this.errors[propertyPath] = [error.title];
-          }
-        });        
       }
     }
   }

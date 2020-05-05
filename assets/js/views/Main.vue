@@ -39,6 +39,7 @@
 <script>
   import { post } from '../utils/api';
   import { successMessage } from '../utils/message';
+  import { fillFormErrors } from '../utils/helpers';
   export default {
     data() {
       return {
@@ -71,7 +72,7 @@
               this.disableShortenButton = true;
               this.shortUrl = response.data.url;
             } else if (response.data.violations && response.data.violations.length) {
-              this.fillErrors(response.data.violations);
+              fillFormErrors.call(this, response.data.violations);
             }
           }
         });
@@ -87,17 +88,6 @@
         document.execCommand('copy');
         document.body.removeChild(input);
         successMessage('Copied to clipboard!');
-      },
-      fillErrors: function (errors) {
-        this.errors = {};
-        errors.forEach(error => {
-          const propertyPath = error.propertyPath.replace(/[\[\]']+/g, '');
-          if (this.errors[propertyPath]) {
-            this.errors[propertyPath].push(error.title);
-          } else {
-            this.errors[propertyPath] = [error.title];
-          }
-        });
       }
     }
   }
