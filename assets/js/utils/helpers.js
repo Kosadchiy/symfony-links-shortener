@@ -1,4 +1,4 @@
-export const fillFormErrors = (errors) => {
+export const fillFormErrors = function (errors) {
   this.errors = {};
   errors.forEach(error => {
     const propertyPath = error.propertyPath.replace(/[\[\]']+/g, '');

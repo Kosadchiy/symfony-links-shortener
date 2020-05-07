@@ -12,7 +12,9 @@
       <el-row :gutter="20">
         <el-col :span="20">
           <el-menu router class="main-nav" mode="horizontal">
-            <el-menu-item :route="{name:'main'}" index="1">Main</el-menu-item>
+            <el-menu-item :route="{name:'main'}" index="1">
+              <img src="../images/logo.png" alt="">
+            </el-menu-item>
           </el-menu>
         </el-col>
         <el-col :span="4">
