@@ -4,7 +4,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 80vh;
+      min-height: 70vh;
       button {
         width: 100%;
       }
@@ -38,8 +38,9 @@
 </template>
 <script>
   import { post } from '../utils/api';
-  import { fillFormErrors } from '../utils/helpers';
+  import { fillFormErrors, isAuth } from '../utils/helpers';
   import Cookies from 'js-cookie';
+  import { mapActions } from 'vuex';
   export default {
     data() {
       return {
@@ -59,6 +60,7 @@
       };
     },
     methods: {
+      ...mapActions(['getUser']),
       submitForm: async function (formName) {
         this.$refs[formName].validate( async (valid) => {
           if (!valid) {
@@ -67,13 +69,19 @@
             this.errors = {};
             const response = await post('/api/login', this.$refs[formName].model);
             if (response.status === 200) {
-              Cookies.set('api_token', response.data.token);
-              location.href = '/';
+              Cookies.set('token', response.data.token);
+              await this.getUser();
+              this.$router.push({ path: 'links' });
             } else if (response.data.violations && response.data.violations.length) {
               fillFormErrors.call(this, response.data.violations);
             }
           }
         });
+      }
+    },
+    mounted () {
+      if (isAuth()) {
+        this.$router.push({ path: 'links' });
       }
     }
   }

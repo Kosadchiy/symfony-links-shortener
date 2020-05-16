@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie';
+
 export const fillFormErrors = function (errors) {
   this.errors = {};
   errors.forEach(error => {
@@ -8,4 +10,8 @@ export const fillFormErrors = function (errors) {
       this.errors[propertyPath] = [error.title];
     }
   });
+}
+
+export const isAuth = function () {
+  return typeof Cookies.get('token') !== 'undefined';
 }

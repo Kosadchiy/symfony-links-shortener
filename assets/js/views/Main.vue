@@ -4,7 +4,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 80vh;
+      min-height: 70vh;
     }
   }
   #short__url {
@@ -24,6 +24,8 @@
 </template>
 
 <script>
+  import { successMessage } from '../utils/message';
+  import { isAuth } from '../utils/helpers';
   export default {
     data() {
       return {
@@ -42,6 +44,11 @@
         document.execCommand('copy');
         document.body.removeChild(input);
         successMessage('Copied to clipboard!');
+      }
+    },
+    mounted () {
+      if (isAuth()) {
+        this.$router.push({ path: 'links' });
       }
     }
   }

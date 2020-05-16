@@ -4,7 +4,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 80vh;
+      min-height: 70vh;
       button {
         width: 100%;
       }
@@ -46,7 +46,7 @@
 <script>
   import { post } from '../utils/api';
   import { successMessage } from '../utils/message';
-  import { fillFormErrors } from '../utils/helpers';
+  import { fillFormErrors, isAuth } from '../utils/helpers';
   export default {
     data() {
       return {
@@ -79,12 +79,17 @@
             const response = await post('/api/register', this.$refs[formName].model);
             if (response.status === 200) {
               successMessage('Success!');
-              location.href = '/login';
+              this.$router.push({ path: 'login' });
             } else if (response.data.violations && response.data.violations.length) {
               fillFormErrors.call(this, response.data.violations);
             }
           }
         });
+      }
+    },
+    mounted () {
+      if (isAuth()) {
+        this.$router.push({ path: 'links' });
       }
     }
   }

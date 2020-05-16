@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -54,10 +55,15 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/security/login", name="login")
+     * @Route("/user", name="user", methods={"GET"} )
      */
-    public function loginAction()
+    public function user(Security $security)
     {
-        
+        $user = $security->getUser();
+        return (new JsonResponse)->setData([
+            'user' => [
+                'email' => $user->getEmail()
+            ]
+        ]);
     }
 }
