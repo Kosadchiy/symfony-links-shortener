@@ -31,6 +31,11 @@ class Link
      */
     private $short_url;
 
+     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="links")
+     */
+    private $user;
+
     /**
      * @var \DateTime  $created_at
      * 
@@ -74,6 +79,18 @@ class Link
     public function setShortUrl(string $short_url): self
     {
         $this->short_url = $short_url;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Link;
 use App\Repository\LinkRepository;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,10 +18,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class LinkController extends AbstractController
 {
     private $linkRepository;
+    private $security;
 
-    public function __construct(LinkRepository $linkRepository)
+    public function __construct(LinkRepository $linkRepository, Security $security)
     {
         $this->linkRepository = $linkRepository;
+        $this->security = $security;
     }
 
     /**
@@ -34,6 +37,11 @@ class LinkController extends AbstractController
             return (new JsonResponse)->setStatusCode(JsonResponse::HTTP_BAD_REQUEST);
             
         $link = $serializer->deserialize($content, Link::class, 'json');
+        $user = $this->security->getUser();
+        if ($user) {
+            $link->setUser($user);
+        }
+
         $errors = $validator->validate($link);
 
         if (count($errors) > 0) {

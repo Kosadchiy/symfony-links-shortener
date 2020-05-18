@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -30,11 +32,6 @@ class User implements UserInterface
     private $id;
 
     /**
-    * @ORM\Column(type="string", unique=true, nullable=true)
-    */
-    private $apiToken;
-
-    /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\NotBlank(groups={"registration", "default"})
      * @Assert\Email(groups={"registration", "default"})
@@ -55,6 +52,11 @@ class User implements UserInterface
     private $password;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Link", mappedBy="user")
+     */
+    private $links;
+
+    /**
      * @var \DateTime  $created_at
      * 
      * @Gedmo\Timestampable(on="create")
@@ -72,21 +74,14 @@ class User implements UserInterface
      */
     private $updated_at;
 
+    public function __construct()
+    {
+        $this->links = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getApiToken(): ?string
-    {
-        return $this->apiToken;
-    }
-
-    public function setApiToken(string $apiToken): self
-    {
-        $this->apiToken = $apiToken;
-
-        return $this;
     }
 
     public function getEmail(): ?string
@@ -145,6 +140,14 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return Collection|Link[]
+     */
+    public function getLinks(): Collection
+    {
+        return $this->links;
+    }
+
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
@@ -182,7 +185,6 @@ class User implements UserInterface
      */
     public function eraseCredentials()
     {
-        $this->password = null;
         $this->confirm = null;
     }
 }
